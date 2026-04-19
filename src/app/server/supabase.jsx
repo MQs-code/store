@@ -1,11 +1,13 @@
+// server/supabase.js (ya jahan bhi aapne initialize kiya hai)
 import { createClient } from '@supabase/supabase-js'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.error("Supabase environment variables are missing!")
+// Agar build ke waqt ye missing hain to ye crash karega
+if (!supabaseUrl || !supabaseKey) {
+  console.error("Supabase keys are missing!")
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+const supabase = createClient(supabaseUrl, supabaseKey)
 export default supabase
