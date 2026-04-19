@@ -5,6 +5,7 @@ import { sendWhatsAppMessage } from '../utils/whatsapp';
 import { deleteProduct, updateProduct } from '../server/action';
 
 const ProductCard = ({ product, refreshData }) => {
+  if(!product) return null; // Safety check
   const [showBuyModal, setShowBuyModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -63,7 +64,7 @@ const ProductCard = ({ product, refreshData }) => {
         </div>
 
         <div className="p-5 sm:p-8 flex flex-col flex-grow">
-          <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-1">{product.name}</h3>
+          <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-1">{product?.name}</h3>
           <p className="text-xl sm:text-2xl font-black text-green-900 mb-4">{product.price} PKR</p>
           
           <button onClick={() => setShowBuyModal(true)} className="mt-auto w-full bg-green-900 text-white py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold uppercase text-[9px] sm:text-[10px] tracking-[0.2em] flex items-center justify-center gap-2 hover:bg-black transition-all">
