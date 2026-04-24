@@ -1,13 +1,14 @@
 'use server'
 import supabase from './supabase'
 
+// 1. Manual Add Function (For Camera/Gallery uploads)
 export async function addProduct(formData) {
   try {
-    // FIX: 'formaData' ko 'formData' kar diya
     const file = formData.get('image'); 
     const name = formData.get('name');
     const price = formData.get('price');
     const description = formData.get('description');
+    // Barcode line yahan se remove kar di gayi hai
 
     if (!file) throw new Error("No image file provided");
 
@@ -26,7 +27,7 @@ export async function addProduct(formData) {
       .from("images")
       .getPublicUrl(fileName);
 
-    // 3. Database Insert
+    // 3. Database Insert (Barcode removed from here too)
     const { data: dbData, error: dbError } = await supabase
       .from("products")
       .insert([
@@ -35,6 +36,7 @@ export async function addProduct(formData) {
           price: parseFloat(price), 
           description, 
           image_url: publicUrl 
+          // Ab yahan barcode column insert nahi hoga
         }
       ]);
 
@@ -46,25 +48,32 @@ export async function addProduct(formData) {
     return { success: false, message: error.message };
   }
 }
-export async function bulkAddProducts(productsArray) {
+
+// 2. Excel Bulk Add Function (For Pixabay URLs)
+export async function bulkAddProducts(products) {
   try {
     const { data, error } = await supabase
-      .from("products")
-      .insert(productsArray.map(item => ({
-        name: item.Name || item.name,
-        price: parseFloat(item.Price || item.price),
-        description: item.Description || item.description || "Luxury Collection Item",
-        // Image url abhi ke liye empty ya placeholder
-        image_url: "https://via.placeholder.com/600x800?text=Pending+Image"
-      })));
+      .from('products')
+      .insert(
+        products.map((item) => ({
+          name: String(item.name || "Unnamed Product"),
+          price: parseFloat(item.price) || 0,
+          description: String(item.description || ''),
+          // FIX: Use image_url to match your manual add function 
+          // and use item.image to match your client-side map
+          image_url: item.image || '' 
+        }))
+      );
 
-    if (error) throw new Error(error.message);
-    return { success: true, message: `${productsArray.length} products added!` };
+    if (error) throw error;
+    return { success: true };
   } catch (error) {
-    return { success: false, message: error.message };
+    console.error("Bulk Add Error:", error.message);
+    return { success: false, error: error.message };
   }
 }
 
+// 3. Update Function
 export async function updateProduct(productId, updatedData) {
   try {
     const { error } = await supabase
@@ -78,28 +87,41 @@ export async function updateProduct(productId, updatedData) {
     return { success: false, message: error.message };
   }
 }
-export async function deleteProduct(productId, imageUrl) {
+
+// 4. Delete Function
+export async function deleteProduct(id, imageUrl) {
   try {
-    // 1. Storage se file delete karna
-    // URL se file name nikalna (e.g., "171234567-89.jpg")
-    const fileName = imageUrl.split('/').pop();
-    
-    const { error: storageError } = await supabase.storage
-      .from("product-images")
-      .remove([fileName]);
+    console.log("Attempting to delete image at URL:", imageUrl);
 
-    if (storageError) console.error("Storage Delete Warning:", storageError.message);
+    if (imageUrl && imageUrl.includes('storage/v1/object/public/images/')) {
+      // This extraction is safer
+      const fileName = decodeURIComponent(imageUrl.split('public/images/')[1]);
+      
+      console.log("Extracted FileName for deletion:", fileName);
 
-    // 2. Database se row delete karna
+      const { data, error: storageError } = await supabase
+        .storage
+        .from('images') 
+        .remove([fileName]);
+
+      if (storageError) {
+        console.error("Supabase Storage Error:", storageError.message);
+        throw new Error("Storage delete failed: " + storageError.message);
+      }
+      
+      console.log("Storage delete response:", data);
+    }
+
     const { error: dbError } = await supabase
-      .from("products")
+      .from('products')
       .delete()
-      .eq("id", productId);
+      .eq('id', id);
 
     if (dbError) throw dbError;
 
     return { success: true };
   } catch (error) {
+    console.error("Final Delete Error:", error.message);
     return { success: false, message: error.message };
   }
 }
