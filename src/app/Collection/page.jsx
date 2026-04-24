@@ -242,7 +242,7 @@ export default function Collection() {
         {/* SEARCH BAR */}
        <div className={`relative mx-auto transition-all duration-700 z-[100] 
   ${isSearchExpanded 
-    ? "w-[90vw] md:w-full max-w-2xl opacity-100" // Mobile: 90% of screen width | Desktop: max-w-2xl
+    ? "w-[100vw] md:w-full max-w-2xl opacity-100" // Mobile: 90% of screen width | Desktop: max-w-2xl
     : "w-12 md:w-full md:max-w-5xl opacity-100"
   }`}
   style={{ transitionTimingFunction: 'cubic-bezier(0.23, 1, 0.32, 1)' }} // Smooth luxury easing
