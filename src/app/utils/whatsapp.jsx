@@ -2,7 +2,7 @@ export const sendWhatsAppMessage = (product, phoneNumber = "923707158959") => {
     // Message template for professional look
     const message = `*--- New Order ---*%0A` +
                     `*Product:* ${product.name}%0A` +
-                    `*Price:* ${product.price}%0A` +
+                    `*Price:* PKR ${product.price}%0A` +
                     `*Description:* ${product.description || 'No description'}%0A` +
                     `*Link:* ${product.image_url}%0A%0A` +
                     `Please confirm the order.`;

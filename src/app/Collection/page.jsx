@@ -243,19 +243,19 @@ export default function Collection() {
        <div className={`relative mx-auto transition-all duration-700 z-[100] 
   ${isSearchExpanded 
     ? "w-full md:w-full max-w-2xl opacity-100" // Mobile: 90% of screen width | Desktop: max-w-2xl
-    : "w-12 md:w-full md:max-w-5xl opacity-100"
+    : "w-full md:w-full md:max-w-5xl opacity-100"
   }`}
   style={{ transitionTimingFunction: 'cubic-bezier(0.23, 1, 0.32, 1)' }} // Smooth luxury easing
 >
-          <div className="fixed top-20 right-8 md:relative md:top-0 md:right-0 flex items-center justify-end">
+          <div className="fixed top-20 right-4 md:relative md:top-0 md:right-0 flex items-center justify-end">
             <input
               type="text"
               placeholder="Search masterpieces..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className={`transition-all duration-700 outline-none ${isSearchExpanded ? "absolute right-0 w-[280px] md:w-full bg-white backdrop-blur-3xl border border-green-700/20 py-3 md:py-4 pl-10 pr-12 rounded-2xl shadow-lg opacity-100" : "w-0 opacity-0 md:w-full md:opacity-100 md:relative md:bg-white/60 md:backdrop-blur-3xl md:border md:border-green-700/20 md:py-4 md:pl-10 md:pr-12 md:rounded-full md:shadow-none border-none shadow-none pointer-events-none md:pointer-events-auto"} text-slate-900`}
+              className={`transition-all duration-700 outline-none ${isSearchExpanded ? "absolute right-0 w-[93vw] md:w-full bg-white backdrop-blur-3xl border border-green-700/20 py-3 md:py-4 pl-10 pr-12 rounded-2xl shadow-lg opacity-100" : "w-0 opacity-0 md:w-full md:opacity-100 md:relative md:bg-white/60 md:backdrop-blur-3xl md:border md:border-green-700/20 md:py-4 md:pl-10 md:pr-12 md:rounded-full md:shadow-none border-none shadow-none pointer-events-none md:pointer-events-auto"} text-slate-900`}
             />
-            <div className="absolute right-3 flex items-center">
+            <div className="absolute right-3 flex ">
               {isSearchExpanded ? (
                 <button onClick={() => setIsSearchExpanded(false)} className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100/50 text-slate-500"><X size={16} /></button>
               ) : (
