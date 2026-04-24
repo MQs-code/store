@@ -247,7 +247,7 @@ export default function Collection() {
   }`}
   style={{ transitionTimingFunction: 'cubic-bezier(0.23, 1, 0.32, 1)' }} // Smooth luxury easing
 >
-          <div className="fixed top-20 right-4 md:relative md:top-0 md:right-0 flex items-center justify-end">
+          <div className="fixed top-20 right-8 md:relative md:top-0 md:right-0 flex items-center justify-end">
             <input
               type="text"
               placeholder="Search masterpieces..."
