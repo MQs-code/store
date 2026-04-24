@@ -1,4 +1,4 @@
-export const sendWhatsAppMessage = (product, phoneNumber = "923000000000") => {
+export const sendWhatsAppMessage = (product, phoneNumber = "923707158959") => {
     // Message template for professional look
     const message = `*--- New Order ---*%0A` +
                     `*Product:* ${product.name}%0A` +

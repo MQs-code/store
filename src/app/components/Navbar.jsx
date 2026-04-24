@@ -82,13 +82,14 @@ const Navbar = () => {
   {isMenuOpen && (
     /* --- KEY 2: Added key="menu" --- */
     <MotionDiv 
-      key="menu"
-      initial={{ y: '-100%' }}
-      animate={{ y: 0 }}
-      exit={{ y: '-100%' }}
-      transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-      className="fixed inset-0 z-[90] bg-white/70 backdrop-blur-2xl flex flex-col items-center justify-start pt-20 space-y-6 md:hidden h-[340px] shadow-2xl rounded-b-[3rem] pb-0"
-    >
+  key="menu"
+  initial={{ y: '-100%' }}
+  animate={{ y: 0 }}
+  exit={{ y: '-100%' }}
+  transition={{ type: 'spring', damping: 28, stiffness: 220 }}
+  /* Change: Added width logic and centering */
+  className="fixed top-0 left-1/2 -translate-x-1/2 z-[90] bg-white/60 backdrop-blur-3xl flex flex-col items-center justify-start pt-24 space-y-8 md:hidden h-auto pb-12 shadow-2xl rounded-b-[3rem] w-[95vw] max-w-[500px]"
+>
       <Link href="/" onClick={() => setIsMenuOpen(false)} className="text-xl font-bold">Home</Link>
       <Link href="/Collection" onClick={() => setIsMenuOpen(false)} className="text-xl font-bold">Collections</Link>
       <Link href="/vision" onClick={() => setIsMenuOpen(false)} className="text-xl font-bold">Our Vision</Link>

@@ -240,7 +240,13 @@ export default function Collection() {
         </div>
 
         {/* SEARCH BAR */}
-        <div className={`relative mx-auto transition-all duration-1000 z-[100] ${isSearchExpanded ? "w-full max-w-2xl opacity-100" : "w-12 md:w-full md:max-w-5xl opacity-100"}`}>
+       <div className={`relative mx-auto transition-all duration-700 z-[100] 
+  ${isSearchExpanded 
+    ? "w-[90vw] md:w-full max-w-2xl opacity-100" // Mobile: 90% of screen width | Desktop: max-w-2xl
+    : "w-12 md:w-full md:max-w-5xl opacity-100"
+  }`}
+  style={{ transitionTimingFunction: 'cubic-bezier(0.23, 1, 0.32, 1)' }} // Smooth luxury easing
+>
           <div className="fixed top-20 right-4 md:relative md:top-0 md:right-0 flex items-center justify-end">
             <input
               type="text"
@@ -262,15 +268,25 @@ export default function Collection() {
       </div>
 
       {/* PRODUCTS GRID */}
-      <div className="max-w-full mx-auto overflow-hidden">
-        <div className="flex flex-nowrap overflow-x-auto no-scrollbar snap-x snap-mandatory px-6 pb-12 md:grid md:grid-cols-3 md:flex-wrap md:px-12 gap-8 md:gap-12">
-          {filteredProducts.map((item, index) => (
-            <div key={item.id} className="shrink-0 w-[280px] md:w-full snap-center animate-in fade-in slide-in-from-right-10 duration-1000" style={{ animationDelay: `${index * 100}ms` }}>
-              <ProductCard product={item} refreshData={fetchProducts} validateAdmin={validateAdmin} />
-            </div>
-          ))}
+     <div className="max-w-full mx-auto overflow-hidden">
+  {filteredProducts.length > 0 ? (
+    <div className="flex flex-nowrap overflow-x-auto no-scrollbar snap-x snap-mandatory px-6 pb-12 md:grid md:grid-cols-3 md:flex-wrap md:px-12 gap-8 md:gap-12">
+      {filteredProducts.map((item, index) => (
+        <div key={item.id} className="shrink-0 w-[280px] md:w-full snap-center animate-in fade-in slide-in-from-right-10 duration-1000" style={{ animationDelay: `${index * 100}ms` }}>
+          <ProductCard product={item} refreshData={fetchProducts} validateAdmin={validateAdmin} />
         </div>
-      </div>
+      ))}
+    </div>
+  ) : (
+    /* --- EMPTY STATE --- */
+    <div className="flex flex-col items-center justify-center py-40 px-6 text-center">
+      <h3 className="serif text-2xl font-medium text-slate-900 italic mb-2">No products added yet</h3>
+      <p className="text-slate-500 text-sm tracking-widest uppercase font-bold opacity-50">
+        Gallery is currently empty
+      </p>
+    </div>
+  )}
+</div>
 
       {/* FLOATING ACTION BUTTONS */}
    <div className=" fixed bottom-10 right-6 md:right-10 flex flex-col gap-3 z-50 ">
