@@ -225,7 +225,15 @@ const handleSubmit = async (e) => {
       document.body.classList.remove('menu-is-open');
     }
   }, [isMenuOpen]);
+   const chunkArray = (arr, size) => {
+  const chunks = [];
+  for (let i = 0; i < arr.length; i += size) {
+    chunks.push(arr.slice(i, i + size));
+  }
+  return chunks;
+};
 
+const productRows = chunkArray(filteredProducts, 7);
   return (
     <main className="min-h-screen bg-[#FDFDFD] pb-24 lg:pb-32 selection:bg-green-900 selection:text-white overflow-x-hidden">
       
@@ -289,15 +297,29 @@ const handleSubmit = async (e) => {
       </div>
 
       {/* PRODUCTS GRID */}
-     <div className="max-w-full mx-auto overflow-hidden">
-  {filteredProducts.length > 0 ? (
-    <div className="flex flex-nowrap overflow-x-auto no-scrollbar snap-x snap-mandatory px-6 pb-12 md:grid md:grid-cols-3 md:flex-wrap md:px-12 gap-8 md:gap-12">
-      {filteredProducts.map((item, index) => (
-        <div key={item.id} className="shrink-0 w-[280px] md:w-full snap-center animate-in fade-in slide-in-from-right-10 duration-1000" style={{ animationDelay: `${index * 100}ms` }}>
-          <ProductCard product={item} refreshData={fetchProducts} validateAdmin={validateAdmin} />
-        </div>
-      ))}
-    </div>
+     <div className="max-w-full mx-auto overflow-hidden flex flex-col gap-8">
+  {productRows.length > 0 ? (
+    productRows.map((row, rowIndex) => (
+      /* Each 'row' is a horizontal scroll container */
+      <div 
+        key={rowIndex} 
+        className="flex flex-nowrap overflow-x-auto no-scrollbar snap-x snap-mandatory px-6 gap-8 md:grid md:grid-cols-3 md:px-12 md:gap-12"
+      >
+        {row.map((item, index) => (
+          <div 
+            key={item.id} 
+            className="shrink-0 w-[280px] md:w-full snap-center animate-in fade-in slide-in-from-right-10 duration-1000" 
+            style={{ animationDelay: `${index * 100}ms` }}
+          >
+            <ProductCard 
+              product={item} 
+              refreshData={fetchProducts} 
+              validateAdmin={validateAdmin} 
+            />
+          </div>
+        ))}
+      </div>
+    ))
   ) : (
     /* --- EMPTY STATE --- */
     <div className="flex flex-col items-center justify-center py-40 px-6 text-center">
@@ -418,8 +440,8 @@ const handleSubmit = async (e) => {
 <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-black/5 mb-6">
   <div className="flex flex-col">
     <span className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Inventory Status</span>
-    <span className={`text-xs font-bold ${editForm.stock_status ? 'text-green-600' : 'text-red-600'}`}>
-      {editForm.stock_status ? '● Product In Stock' : '○ Out of Stock'}
+    <span className={`text-xs font-bold ${editForm.stock ? 'text-green-600' : 'text-red-600'}`}>
+      {editForm.stock ? '● Product In Stock' : '○ Out of Stock'}
     </span>
   </div>
 

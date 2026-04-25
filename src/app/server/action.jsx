@@ -8,7 +8,7 @@ export async function addProduct(formData) {
     const name = formData.get('name');
     const price = formData.get('price');
     const description = formData.get('description');
-    const stock = formData.get('stock') === true;
+    const stock = formData.get('stock') === false;
     // Barcode line yahan se remove kar di gayi hai
 
     if (!file) throw new Error("No image file provided");
