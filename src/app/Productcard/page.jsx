@@ -22,14 +22,26 @@ const ProductCard = ({ product, refreshData }) => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [imgSrc, setImgSrc] = useState(product.image_url);
-
+ 
   const [editForm, setEditForm] = useState({
     name: product.name,
     price: product.price,
     description: product.description || "",
     stock_status: product.stock, // <--- IS LINE KO ADD KAREIN
   });
-
+ React.useEffect(() => {
+  setImgSrc(product.image_url);
+  
+  // Empty { ... } ki jagah actual data pass karein
+  setEditForm({
+    name: product.name,
+    price: product.price,
+    description: product.description || "",
+    stock_status: product.stock
+  });
+  
+  setIsProcessing(false); 
+}, [product]);
   // --- ADMIN VALIDATION FIRST ---
   const validateAdmin = async () => {
     const { value: password } = await Swal.fire({
@@ -118,25 +130,31 @@ const ProductCard = ({ product, refreshData }) => {
     setIsProcessing(false);
   };
 
-  const handleUpdate = async (e) => {
-    e.preventDefault();
-    setIsProcessing(true);
-    const res = await updateProduct(product.id, editForm);
-    if (res.success) {
-      setShowEditModal(false);
-      Swal.fire({
-        icon: "success",
-        title: "Inventory Success",
-        text: "Product details updated.",
-        confirmButtonColor: "#064e3b",
-      });
-      refreshData();
-    } else {
-      Swal.fire("Error", res.message, "error");
-    }
-    setIsProcessing(false);
+ const handleUpdate = async (e) => {
+  e.preventDefault();
+  setIsProcessing(true);
+  
+  // Ensure karein ke keys wahi hon jo database expect kar raha hai
+  const dataToUpdate = {
+    name: editForm.name,
+    price: editForm.price,
+    description: editForm.description,
+    stock: editForm.stock_status // Agar DB mein column ka naam 'stock' hai
   };
 
+  const res = await updateProduct(product.id, dataToUpdate);
+  
+  if (res.success) {
+    setShowEditModal(false);
+    await refreshData();
+    // Force reset local state taake UI update ho jaye
+    setIsProcessing(false);
+    Swal.fire({ icon: "success", title: "Updated", timer: 1000 });
+  } else {
+    setIsProcessing(false);
+    Swal.fire("Error", res.message, "error");
+  }
+};
   return (
     <>
       <div className="group relative bg-white border border-slate-100 rounded-3xl transition-all duration-500 shadow-2xl flex flex-col overflow-hidden max-w-[250px] h-[350px] sm:h-auto sm:max-w-full mx-auto">

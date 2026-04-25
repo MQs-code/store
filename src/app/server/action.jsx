@@ -8,7 +8,7 @@ export async function addProduct(formData) {
     const name = formData.get('name');
     const price = formData.get('price');
     const description = formData.get('description');
-    const stock = formData.get('stock');
+    const stock = formData.get('stock') === true;
     // Barcode line yahan se remove kar di gayi hai
 
     if (!file) throw new Error("No image file provided");
@@ -36,7 +36,8 @@ export async function addProduct(formData) {
           name, 
           price: parseFloat(price), 
           description, 
-          image_url: publicUrl 
+          image_url: publicUrl ,
+          stock: stock
           // Ab yahan barcode column insert nahi hoga
         }
       ]);
@@ -76,7 +77,7 @@ export async function bulkAddProducts(products) {
 
 // 3. Update Function
 // --- SAHI EXPORT FORMAT ---
-export const updateProduct = async (id, updatedData) => { // 'export' hona lazmi hy
+export const updateProduct = async (id, updatedData) => {
   try {
     const { data, error } = await supabase
       .from('products')
@@ -84,18 +85,17 @@ export const updateProduct = async (id, updatedData) => { // 'export' hona lazmi
         name: updatedData.name,
         price: updatedData.price,
         description: updatedData.description,
-        stock: updatedData.stock_status,
+        stock: updatedData.stock, // Check karein ke DB mein column 'stock' hi hy na?
       })
-      .eq('id', id);
+      .eq('id', id)
+      .select(); // Naya data wapas mangwaein
 
     if (error) throw error;
     return { success: true };
   } catch (error) {
-    console.error("Update Error:", error.message);
     return { success: false, message: error.message };
   }
 };
-
 // 4. Delete Function
 export async function deleteProduct(id, imageUrl) {
   try {

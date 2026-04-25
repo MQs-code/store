@@ -164,42 +164,51 @@ export default function Collection() {
   // ==========================================
   // --- SINGLE PRODUCT SUBMISSION ---
   // ==========================================
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsUploading(true);
-    const form = e.currentTarget;
-    const formData = new FormData(form);
-    const imageFile = formData.get("image");
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setIsUploading(true); // Spinner ON
+  const form = e.currentTarget;
+  const formData = new FormData(form);
+  
+  // Toggle ki value manually add karein taake DB mein jaye
+  formData.append("stock", editForm.stock_status); 
 
-    try {
-      if (imageFile && imageFile.size > 0) {
-        const options = { maxSizeMB: 0.1, maxWidthOrHeight: 1024 };
-        const compressedFile = await imageCompression(imageFile, options);
-        formData.set("image", compressedFile, imageFile.name);
-      }
-      const result = await addProduct(formData);
-      if (result.success) {
-        setIsOpen(false);
-        setImagePreview(null);
-        form.reset();
-        Swal.fire({
-          icon: "success",
-          title: "ASSET PUBLISHED",
-          text: "Item successfully added to the curated collection.",
-          buttonsStyling: false,
-          customClass: {
-            popup: "rounded-[3rem] p-12",
-            title: "serif font-bold text-green-900",
-            confirmButton: "bg-green-900 text-white rounded-full px-12 py-4 font-bold text-[10px] uppercase tracking-widest"
-          }
-        });
-        fetchProducts();
-      }
-    } catch (err) {
-      console.error(err);
-      setIsUploading(false);
+  const imageFile = formData.get("image");
+
+  try {
+    if (imageFile && imageFile.size > 0) {
+      const options = { maxSizeMB: 0.1, maxWidthOrHeight: 1024 };
+      const compressedFile = await imageCompression(imageFile, options);
+      formData.set("image", compressedFile, imageFile.name);
     }
-  };
+    
+    const result = await addProduct(formData);
+    
+    if (result.success) {
+      setIsOpen(false);
+      setImagePreview(null);
+      form.reset();
+      
+      // Spinner ko OFF karein (CRITICAL)
+      setIsUploading(false); 
+      
+      Swal.fire({
+        icon: "success",
+        title: "ASSET PUBLISHED",
+        confirmButtonColor: "#064e3b",
+        timer: 2000
+      });
+      
+      fetchProducts();
+    } else {
+      setIsUploading(false); // Error par bhi OFF karein
+      Swal.fire("Error", result.message, "error");
+    }
+  } catch (err) {
+    console.error(err);
+    setIsUploading(false); // Crash par bhi OFF karein
+  }
+};
 
   // ==========================================
   // --- UI STATE MANAGERS ---
