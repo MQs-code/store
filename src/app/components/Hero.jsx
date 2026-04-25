@@ -154,7 +154,7 @@ export default function DemoPage() {
                 height={900}
                 width={900}
                 priority={true}
-                quality={100}
+                quality={50}
                 alt="Mall Preview"
                 className="relative rounded-[1.5rem] md:rounded-[2.5rem] shadow-2xl object-contain border border-black/5 hover:border-green-800/20 transition-colors duration-500 w-full h-auto"
               />

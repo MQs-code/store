@@ -68,28 +68,31 @@ const Navbar = () => {
       {/* --- MOBILE MENU OVERLAY --- */}
     <AnimatePresence>
   {isMenuOpen && (
-    /* --- KEY 1: Added key="overlay" --- */
     <MotionDiv 
       key="overlay"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[80] bg-black/20 backdrop-blur-sm lg:hidden"
+      /* Added transform-gpu to prevent flickering */
+      className="fixed inset-0 z-[80] bg-black/20 backdrop-blur-sm lg:hidden transform-gpu"
       onClick={() => setIsMenuOpen(false)} 
     />
   )}
 
   {isMenuOpen && (
-    /* --- KEY 2: Added key="menu" --- */
     <MotionDiv 
-  key="menu"
-  initial={{ y: '-100%' }}
-  animate={{ y: 0 }}
-  exit={{ y: '-100%' }}
-  transition={{ type: 'spring', damping: 28, stiffness: 220 }}
-  /* Change: Added width logic and centering */
-  className="fixed top-0 left-1/2 -translate-x-1/2 z-[90] bg-white/60 backdrop-blur-3xl flex flex-col items-center justify-start pt-24 space-y-8 md:hidden h-auto pb-12 shadow-2xl rounded-b-[3rem] w-[95vw] max-w-[500px]"
->
+      key="menu"
+      initial={{ y: '-100%' }}
+      animate={{ y: 0 }}
+      exit={{ y: '-100%' }}
+      transition={{ type: 'spring', damping: 28, stiffness: 220 }}
+      /* ADDED: 
+         1. transform-gpu -> Hands the animation to the GPU.
+         2. will-change-transform -> Prepares the browser for motion.
+         3. backface-visibility-hidden -> Fixes iOS blurring during springs.
+      */
+      className="fixed top-0 left-1/2 -translate-x-1/2 z-[90] bg-white/60 backdrop-blur-3xl flex flex-col items-center justify-start pt-24 space-y-8 md:hidden h-auto pb-12 shadow-2xl rounded-b-[3rem] w-[95vw] max-w-[500px] transform-gpu will-change-transform [backface-visibility:hidden]"
+    >
       <Link href="/" onClick={() => setIsMenuOpen(false)} className="text-xl font-bold">Home</Link>
       <Link href="/Collection" onClick={() => setIsMenuOpen(false)} className="text-xl font-bold">Collections</Link>
       <Link href="/vision" onClick={() => setIsMenuOpen(false)} className="text-xl font-bold">Our Vision</Link>

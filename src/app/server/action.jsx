@@ -8,6 +8,7 @@ export async function addProduct(formData) {
     const name = formData.get('name');
     const price = formData.get('price');
     const description = formData.get('description');
+    const stock = formData.get('stock');
     // Barcode line yahan se remove kar di gayi hai
 
     if (!file) throw new Error("No image file provided");
@@ -74,19 +75,26 @@ export async function bulkAddProducts(products) {
 }
 
 // 3. Update Function
-export async function updateProduct(productId, updatedData) {
+// --- SAHI EXPORT FORMAT ---
+export const updateProduct = async (id, updatedData) => { // 'export' hona lazmi hy
   try {
-    const { error } = await supabase
-      .from("products")
-      .update(updatedData)
-      .eq("id", productId);
+    const { data, error } = await supabase
+      .from('products')
+      .update({
+        name: updatedData.name,
+        price: updatedData.price,
+        description: updatedData.description,
+        stock: updatedData.stock_status,
+      })
+      .eq('id', id);
 
     if (error) throw error;
     return { success: true };
   } catch (error) {
+    console.error("Update Error:", error.message);
     return { success: false, message: error.message };
   }
-}
+};
 
 // 4. Delete Function
 export async function deleteProduct(id, imageUrl) {
@@ -123,5 +131,21 @@ export async function deleteProduct(id, imageUrl) {
   } catch (error) {
     console.error("Final Delete Error:", error.message);
     return { success: false, message: error.message };
+  }
+}
+// actions.jsx
+
+export async function updateStockStatus(productId, currentStatus) {
+  try {
+    const { data, error } = await supabase
+      .from('products')
+      .update({ stock_status: currentStatus }) // Nayi value (True/False) save hogi
+      .eq('id', productId); // Sirf us shoe ki ID jise change karna hy
+
+    if (error) throw error;
+    return { success: true };
+  } catch (error) {
+    console.error("Update failed:", error.message);
+    return { success: false };
   }
 }

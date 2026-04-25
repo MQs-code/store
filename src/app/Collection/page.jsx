@@ -18,6 +18,11 @@ export default function Collection() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [editForm, setEditForm] = useState({
+  name: '',
+  price: '',
+  stock_status: true // Ye wo "editForm" hy jo missing hy
+});
 
   // ==========================================
   // --- ADMIN AUTHENTICATION LOGIC ---
@@ -73,19 +78,26 @@ export default function Collection() {
   // ==========================================
   // --- PRODUCT DATA FETCHING ---
   // ==========================================
-  const fetchProducts = async () => {
-    const { data } = await supabase
-      .from("products")
-      .select("*")
-      .order("created_at", { ascending: false });
-    if (data) {
-      setProducts(data);
-      localStorage.setItem("cached_products", JSON.stringify(data));
-    }
-    setLoading(false);
-    setIsUploading(false);
-  };
+ const fetchProducts = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .range(0, 19); 
 
+    if (error) throw error;
+    setProducts(data || []);
+    
+    // DELETE THIS LINE (It's causing the "undefined" or conflict error)
+    // setFilteredProducts(data || []); ❌
+    
+  } catch (error) {
+    console.error('Error fetching products:', error.message);
+  } finally {
+    setLoading(false);
+  }
+};
   useEffect(() => {
     const cachedData = localStorage.getItem("cached_products");
     if (cachedData) {
@@ -253,7 +265,7 @@ export default function Collection() {
               placeholder="Search masterpieces..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className={`transition-all duration-700 outline-none ${isSearchExpanded ? "absolute right-0 w-[93vw] md:w-full bg-white backdrop-blur-3xl border border-green-700/20 py-3 md:py-4 pl-10 pr-12 rounded-2xl shadow-lg opacity-100" : "w-0 opacity-0 md:w-full md:opacity-100 md:relative md:bg-white/60 md:backdrop-blur-3xl md:border md:border-green-700/20 md:py-4 md:pl-10 md:pr-12 md:rounded-full md:shadow-none border-none shadow-none pointer-events-none md:pointer-events-auto"} text-slate-900`}
+              className={`transition-all duration-700 outline-none ${isSearchExpanded ? "absolute right-0 w-[93vw] md:w-full bg-white backdrop-blur-3xl border border-green-700/20 py-3 md:py-4 pl-10 pr-12 rounded-2xl shadow-lg shadow-green-900/70 opacity-100" : "w-0 opacity-0 md:w-full md:opacity-100 md:relative md:bg-white/60 md:backdrop-blur-3xl md:border md:border-green-700/20 md:py-4 md:pl-10 md:pr-12 md:rounded-full md:shadow-none border-none shadow-none pointer-events-none md:pointer-events-auto"} text-slate-900`}
             />
             <div className="absolute right-3 flex ">
               {isSearchExpanded ? (
@@ -393,6 +405,29 @@ export default function Collection() {
                   className="w-full py-4 border-b border-slate-100 outline-none focus:border-green-900 transition-colors font-bold"
                   required
                 />
+                 {/* Professional Toggle Switch */}
+<div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-black/5 mb-6">
+  <div className="flex flex-col">
+    <span className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Inventory Status</span>
+    <span className={`text-xs font-bold ${editForm.stock_status ? 'text-green-600' : 'text-red-600'}`}>
+      {editForm.stock_status ? '● Product In Stock' : '○ Out of Stock'}
+    </span>
+  </div>
+
+  <button
+    type="button"
+    onClick={() => setEditForm({ ...editForm, stock_status: !editForm.stock_status })}
+    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 ${
+      editForm.stock_status ? 'bg-green-600' : 'bg-slate-300'
+    }`}
+  >
+    <span
+      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-300 ${
+        editForm.stock_status ? 'translate-x-6' : 'translate-x-1'
+      }`}
+    />
+  </button>
+</div>
                 <button
                   type="submit"
                   disabled={isUploading}
@@ -400,6 +435,7 @@ export default function Collection() {
                 >
                   {isUploading ? "Processing..." : "Publish to Collection"}
                 </button>
+              
               </form>
             </motion.div>
           </motion.div>
